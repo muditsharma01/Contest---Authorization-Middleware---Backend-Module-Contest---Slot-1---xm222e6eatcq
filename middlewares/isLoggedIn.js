@@ -1,18 +1,35 @@
 const jwt = require('jsonwebtoken');
+const { Request, Response, NextFunction } = require('express');
 const JWT_SECRET = 'newtonSchoolContest';
 
-/*
-Write a middleware function that checks if the user is logged in. The middleware should return a 401 status code with an error message in the JSON payload if the token is missing or invalid. 
+function isLoggedIn(req, res, next) {
+  // Extract the token from the Authorization header
+  const token = req.headers.authorization;
 
-The token can be extracted from req.headers.authorization
+  // Check if the token is missing
+  if (!token) {
+    return res.status(401).json({
+      message: 'Authentication failed: Missing token.',
+      status: 'error',
+    });
+  }
 
-The middleware should have the following signature:
-function protectUserRoutes(req: Request, res: Response, next: NextFunction) => void
+  try {
+    // Verify and decode the token
+    const decoded = jwt.verify(token, JWT_SECRET);
 
-Possible Cases:
+    // Attach the user information to the request for further use in the route
+    req.user = decoded;
 
-Token is missing: { message: 'Authentication failed: Missing token.', status: 'error' } (401)
-Token is invalid: { message: 'Authentication failed: Invalid token.', status: 'error' } (401)
-*/
+    // Continue to the next middleware or route handler
+    next();
+  } catch (error) {
+    // Handle invalid token
+    return res.status(401).json({
+      message: 'Authentication failed: Invalid token.',
+      status: 'error',
+    });
+  }
+}
 
 module.exports = isLoggedIn;
