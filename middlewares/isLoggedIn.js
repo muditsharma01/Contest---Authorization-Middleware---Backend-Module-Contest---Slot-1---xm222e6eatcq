@@ -8,7 +8,7 @@ function isLoggedIn(req, res, next) {
 
   // Check if the token is missing
   if (!token) {
-    return res.status(401).json({
+    return res.status(200).json({
       message: 'Authentication failed: Missing token.',
       status: 'error',
     });
@@ -25,7 +25,7 @@ function isLoggedIn(req, res, next) {
     next();
   } catch (error) {
     // Handle invalid token
-    return res.status(401).json({
+    return res.status(200).json({
       message: 'Authentication failed: Invalid token.',
       status: 'error',
     });
